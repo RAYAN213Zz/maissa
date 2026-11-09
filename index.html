@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maissa ✿</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden}
+  body{
+    background:radial-gradient(ellipse at 50% 35%,#3a1340 0%,#1a0a26 50%,#07030d 100%);
+    font-family:'Cormorant Garamond',serif;color:#fbe9f1;
+    -webkit-tap-highlight-color:transparent;user-select:none;
+  }
+  canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+  #bg{z-index:0}
+  #fx{z-index:5}
+
+  #scene{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+  #name{width:min(92vw,620px);height:auto;overflow:visible;margin-bottom:-2vh}
+  #bouquetWrap{position:relative;display:flex;justify-content:center}
+  #halo{position:absolute;left:50%;top:42%;width:120%;aspect-ratio:1;transform:translate(-50%,-50%);
+    background:radial-gradient(circle,rgba(255,140,190,.28) 0%,rgba(255,140,190,.08) 40%,transparent 68%);
+    opacity:0;animation:halo 5s ease-in-out 1.5s infinite;pointer-events:none}
+  @keyframes halo{0%,100%{opacity:.55;transform:translate(-50%,-50%) scale(.95)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}}
+  #bouquet{height:min(66vh,118vw);width:auto;overflow:visible;position:relative}
+
+  .sub{font-style:italic;font-size:clamp(17px,2.6vw,24px);letter-spacing:.06em;opacity:0;color:#ffd9e8;
+    text-shadow:0 0 18px rgba(255,150,200,.6);animation:fadeUp 1.6s ease 5.2s forwards;margin-top:1vh}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:.9;transform:none}}
+
+  /* name writing */
+  .nm{font-family:'Great Vibes',cursive;font-size:150px;fill:url(#nameG);fill-opacity:0;
+    stroke:#ffe0ee;stroke-width:1.3;stroke-dasharray:1100;stroke-dashoffset:1100;filter:url(#glow);
+    animation:write 3.4s cubic-bezier(.45,0,.3,1) 1.2s forwards,fillin 1.8s ease 3.8s forwards}
+  @keyframes write{to{stroke-dashoffset:0}}
+  @keyframes fillin{to{fill-opacity:1;stroke-opacity:.25}}
+
+  /* bouquet animations */
+  .stem{fill:none;stroke-linecap:round;stroke-dasharray:1 1;stroke-dashoffset:1;
+    animation:draw 1.5s cubic-bezier(.5,0,.3,1) forwards;animation-delay:var(--d)}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .pop{transform:scale(0);animation:pop .9s cubic-bezier(.34,1.56,.64,1) forwards;animation-delay:var(--d)}
+  @keyframes pop{to{transform:scale(1)}}
+  .open{transform:scale(0) rotate(-45deg);opacity:0;animation:open 1.5s cubic-bezier(.22,1.25,.36,1) forwards;animation-delay:var(--d)}
+  @keyframes open{50%{opacity:1}to{transform:scale(1) rotate(0);opacity:1}}
+  .wrap{opacity:0;transform:translateY(40px);animation:wrapIn 1.1s cubic-bezier(.2,.9,.3,1) forwards;animation-delay:var(--d)}
+  @keyframes wrapIn{to{opacity:1;transform:none}}
+  #sway{transform-origin:200px 470px;animation:sway 6s ease-in-out 3.5s infinite}
+  @keyframes sway{0%,100%{transform:rotate(0)}25%{transform:rotate(1.4deg)}75%{transform:rotate(-1.4deg)}}
+  .flower{cursor:pointer}
+  .head.boing{animation:boing .7s cubic-bezier(.3,1.8,.5,1)}
+  @keyframes boing{0%{transform:scale(1)}30%{transform:scale(1.25) rotate(8deg)}60%{transform:scale(.92) rotate(-5deg)}100%{transform:scale(1)}}
+
+  /* intro */
+  #intro{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;cursor:pointer;transition:opacity 1.2s ease}
+  #intro.gone{opacity:0;pointer-events:none}
+  #seed{width:26px;height:26px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%,#fff 0%,#ffc2dc 35%,#e2558f 70%,#7a1a48 100%);
+    box-shadow:0 0 30px 8px rgba(255,120,180,.55),0 0 90px 30px rgba(255,120,180,.2);
+    animation:beat 1.6s ease-in-out infinite;transition:transform 1s cubic-bezier(.6,-0.4,.7,1)}
+  #intro.gone #seed{transform:scale(0) translateY(200px)}
+  @keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.25)}30%{transform:scale(1)}45%{transform:scale(1.15)}}
+  #intro p{margin:0;font-style:italic;font-size:clamp(18px,3vw,24px);letter-spacing:.08em;color:#ffd6e7;opacity:.85;text-align:center;line-height:1.5}
+  #intro small{display:block;font-size:.7em;opacity:.6;letter-spacing:.25em;text-transform:uppercase;font-style:normal;margin-top:6px;animation:blink 2s ease-in-out infinite}
+  @keyframes blink{50%{opacity:.25}}
+
+  #hint{position:fixed;bottom:22px;left:0;right:0;text-align:center;z-index:6;font-style:italic;font-size:15px;letter-spacing:.12em;color:#ffcfe2;opacity:0;transition:opacity 1.5s;pointer-events:none}
+  #replay{position:fixed;top:16px;right:16px;z-index:6;background:rgba(255,255,255,.07);border:1px solid rgba(255,200,225,.25);color:#ffd6e7;
+    width:42px;height:42px;border-radius:50%;font-size:20px;cursor:pointer;opacity:0;transition:opacity 1s,transform .4s;backdrop-filter:blur(6px)}
+  #replay:hover{transform:rotate(-180deg)}
+  #replay.show,#hint.show{opacity:1}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<div id="scene">
+  <svg id="name" viewBox="0 0 620 190"></svg>
+  <div id="bouquetWrap">
+    <div id="halo"></div>
+    <svg id="bouquet" viewBox="20 55 360 470"></svg>
+  </div>
+  <div class="sub" id="sub">un bouquet rien que pour toi</div>
+</div>
+
+<canvas id="fx"></canvas>
+
+<div id="intro">
+  <div id="seed"></div>
+  <p>quelque chose attend de pousser…<small>touche la graine</small></p>
+</div>
+<div id="hint">✿ touche les fleurs ✿</div>
+<button id="replay" aria-label="Rejouer">↻</button>
+
+<script>
+const NS='http://www.w3.org/2000/svg';
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+
+const PAL={
+  red:  ['#5e0719','#c21d48','#ff6b93'],
+  pink: ['#b0346a','#ff8fba','#ffe0ec'],
+  peach:['#c4502c','#ffa07a','#ffe6d4'],
+  lilac:['#5b3196','#b48cf0','#efe4ff'],
+  white:['#e9c9d8','#fff6fa','#ffffff']
+};
+
+/* ---------- Name ---------- */
+function buildName(){
+  const s=$('name');
+  s.innerHTML=`<defs>
+    <linearGradient id="nameG" x1="0" y1="0" x2="1" y2="0" spreadMethod="repeat">
+      <stop offset="0" stop-color="#ffd0e4"/><stop offset=".3" stop-color="#fff3cf"/>
+      <stop offset=".6" stop-color="#ff9cc6"/><stop offset="1" stop-color="#ffd0e4"/>
+      <animateTransform attributeName="gradientTransform" type="translate" from="0 0" to="1 0" dur="4s" repeatCount="indefinite"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-40%" width="140%" height="180%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter></defs>
+    <text x="310" y="140" text-anchor="middle" class="nm">Maissa</text>`;
+}
+
+/* ---------- Bouquet ---------- */
+const FLOWERS=[
+  {x:200,y:128,t:'rose', c:'red',  s:1.3},
+  {x:132,y:172,t:'rose', c:'pink', s:1.05},
+  {x:270,y:166,t:'rose', c:'pink', s:1.1},
+  {x:160,y:238,t:'tulip',c:'peach',s:1},
+  {x:242,y:232,t:'tulip',c:'lilac',s:1},
+  {x:88, y:238,t:'daisy',s:.95},
+  {x:316,y:236,t:'daisy',s:1},
+  {x:202,y:212,t:'daisy',s:.75},
+  {x:62, y:168,t:'bud',  c:'pink', s:1},
+  {x:342,y:158,t:'bud',  c:'red',  s:1},
+  {x:232,y:95, t:'bud',  c:'lilac',s:.9},
+  {x:105,y:120,t:'breath',s:1},
+  {x:300,y:105,t:'breath',s:1},
+  {x:165,y:95, t:'breath',s:.9},
+  {x:360,y:210,t:'breath',s:.9},
+  {x:45, y:215,t:'breath',s:.9},
+];
+
+function defs(svg){
+  const d=el('defs',{},svg);
+  for(const k in PAL){
+    const c=PAL[k];
+    const r=el('radialGradient',{id:'r-'+k,cx:'50%',cy:'100%',r:'110%'},d);
+    el('stop',{offset:'0','stop-color':c[0]},r);el('stop',{offset:'.55','stop-color':c[1]},r);el('stop',{offset:'1','stop-color':c[2]},r);
+    const l=el('linearGradient',{id:'l-'+k,x1:'0',y1:'1',x2:'0',y2:'0'},d);
+    el('stop',{offset:'0','stop-color':c[0]},l);el('stop',{offset:'.5','stop-color':c[1]},l);el('stop',{offset:'1','stop-color':c[2]},l);
+  }
+  const g=el('linearGradient',{id:'stemG',x1:0,y1:1,x2:0,y2:0},d);
+  el('stop',{offset:0,'stop-color':'#1f4a24'},g);el('stop',{offset:1,'stop-color':'#5f9e4a'},g);
+  const lf=el('linearGradient',{id:'leafG',x1:0,y1:0,x2:1,y2:1},d);
+  el('stop',{offset:0,'stop-color':'#7fc36a'},lf);el('stop',{offset:1,'stop-color':'#2c6b33'},lf);
+  const cg=el('radialGradient',{id:'centerG'},d);
+  el('stop',{offset:0,'stop-color':'#fff2a8'},cg);el('stop',{offset:.6,'stop-color':'#ffc23a'},cg);el('stop',{offset:1,'stop-color':'#c87410'},cg);
+  const p1=el('linearGradient',{id:'paperF',x1:0,y1:0,x2:1,y2:1},d);
+  el('stop',{offset:0,'stop-color':'#ffeef3'},p1);el('stop',{offset:.5,'stop-color':'#f7c6d6'},p1);el('stop',{offset:1,'stop-color':'#d9849f'},p1);
+  const p2=el('linearGradient',{id:'paperB',x1:0,y1:0,x2:0,y2:1},d);
+  el('stop',{offset:0,'stop-color':'#d97b9c'},p2);el('stop',{offset:1,'stop-color':'#8a2e55'},p2);
+  const rb=el('linearGradient',{id:'ribbon',x1:0,y1:0,x2:0,y2:1},d);
+  el('stop',{offset:0,'stop-color':'#d62f62'},rb);el('stop',{offset:1,'stop-color':'#7c0f33'},rb);
+}
+
+const quad=(p0,c,p1,t)=>({x:(1-t)**2*p0.x+2*(1-t)*t*c.x+t*t*p1.x,y:(1-t)**2*p0.y+2*(1-t)*t*c.y+t*t*p1.y});
+
+function rose(g,f,d){
+  const rings=[{n:7,dd:10,rx:9.5,ry:12.5,off:0,dl:.5},{n:6,dd:6.5,rx:8,ry:9.5,off:28,dl:.3},{n:5,dd:3.5,rx:6,ry:7,off:12,dl:.15},{n:4,dd:1.5,rx:4,ry:4.5,off:45,dl:0}];
+  rings.forEach((r,ri)=>{
+    for(let i=0;i<r.n;i++){
+      const a=r.off+i*360/r.n;
+      const pg=el('g',{transform:`rotate(${a})`},g);
+      const e=el('ellipse',{cx:0,cy:-r.dd,rx:r.rx,ry:r.ry,fill:`url(#r-${f.c})`,stroke:PAL[f.c][0],'stroke-width':.5,'stroke-opacity':.6,class:'open'},pg);
+      e.style.setProperty('--d',(d+r.dl+i*.03)+'s');
+    }
+  });
+  const sp=el('path',{d:'M0 0 C 2 -2 3 1 1 2.5 C -2 4 -4 0 -2 -2.5 C 1 -5 5 -2 4 2',fill:'none',stroke:PAL[f.c][0],'stroke-width':1,'stroke-linecap':'round',class:'pop'},g);
+  sp.style.setProperty('--d',(d+.6)+'s');
+}
+function daisy(g,f,d){
+  const n=15;
+  for(let i=0;i<n;i++){
+    const pg=el('g',{transform:`rotate(${i*360/n})`},g);
+    const e=el('ellipse',{cx:0,cy:-10.5,rx:3.1,ry:9.5,fill:'#fffafc',stroke:'#f2cddd','stroke-width':.6,class:'open'},pg);
+    e.style.setProperty('--d',(d+i*.035)+'s');
+  }
+  const c=el('circle',{r:6,fill:'url(#centerG)',class:'pop'},g);c.style.setProperty('--d',(d+.2)+'s');
+  for(let i=0;i<8;i++){const a=i*Math.PI/4;const dot=el('circle',{cx:Math.cos(a)*3,cy:Math.sin(a)*3,r:.7,fill:'#a35b0a',class:'pop'},g);dot.style.setProperty('--d',(d+.5)+'s');}
+}
+function tulip(g,f,d){
+  const h=el('g',{class:'pop'},g);h.style.setProperty('--d',d+'s');
+  const fill=`url(#l-${f.c})`,st=PAL[f.c][0];
+  el('path',{d:'M0 2 C -15 -2 -16 -26 -6 -34 C -3 -22 -1 -10 0 2Z',fill,stroke:st,'stroke-width':.6},h);
+  el('path',{d:'M0 2 C 15 -2 16 -26 6 -34 C 3 -22 1 -10 0 2Z',fill,stroke:st,'stroke-width':.6},h);
+  el('path',{d:'M0 3 C -11 -6 -9 -30 0 -39 C 9 -30 11 -6 0 3Z',fill,stroke:st,'stroke-width':.6,opacity:.95},h);
+  el('path',{d:'M-2 -6 C -3 -18 -1 -28 0 -33',fill:'none',stroke:'#fff','stroke-opacity':.35,'stroke-width':1.4,'stroke-linecap':'round'},h);
+}
+function bud(g,f,d){
+  const h=el('g',{class:'pop'},g);h.style.setProperty('--d',d+'s');
+  el('path',{d:'M0 0 C -7 -6 -6 -17 0 -22 C 6 -17 7 -6 0 0Z',fill:`url(#l-${f.c})`,stroke:PAL[f.c][0],'stroke-width':.5},h);
+  el('path',{d:'M0 1 L -6 -9 L -1.5 -4 L 0 -12 L 1.5 -4 L 6 -9Z',fill:'#4f8f45'},h);
+}
+function breath(g,f,d){
+  for(let i=0;i<9;i++){
+    const a=Math.random()*Math.PI*2,r=Math.random()*15;
+    const x=Math.cos(a)*r,y=Math.sin(a)*r*.8;
+    el('line',{x1:0,y1:8,x2:x,y2:y,stroke:'#6c9c5c','stroke-width':.5,opacity:.8},g);
+    const c=el('circle',{cx:x,cy:y,r:1.8+Math.random()*1.4,fill:i%3?'#ffffff':'#ffe3ee',class:'pop'},g);
+    c.style.transformOrigin=`${x}px ${y}px`;
+    c.style.setProperty('--d',(d+Math.random()*.6)+'s');
+  }
+}
+
+function buildBouquet(){
+  const svg=$('bouquet');svg.innerHTML='';
+  defs(svg);
+  const sway=el('g',{id:'sway'},svg);
+
+  // back paper
+  const back=el('path',{d:'M88 305 Q 112 284 140 300 Q 170 276 200 296 Q 230 276 260 300 Q 288 284 312 305 L 200 515Z',fill:'url(#paperB)',class:'wrap'},sway);
+  back.style.setProperty('--d','0s');
+
+  const stems=el('g',{},sway),leaves=el('g',{},sway),heads=el('g',{},sway);
+  FLOWERS.forEach((f,i)=>{
+    const sd=.35+i*.1;
+    f.d=sd+1.15;
+    const p0={x:200+(f.x-200)*.06,y:468},p1={x:f.x,y:f.y+(f.t==='breath'?10:0)},c={x:200+(f.x-200)*.15,y:(468+f.y)/2+20};
+    const thin=f.t==='breath';
+    const s=el('path',{d:`M${p0.x} ${p0.y} Q${c.x} ${c.y} ${p1.x} ${p1.y}`,pathLength:1,class:'stem',stroke:thin?'#5d8f50':'url(#stemG)','stroke-width':thin?1.2:3},stems);
+    s.style.setProperty('--d',sd+'s');
+    if(!thin&&f.t!=='bud'){
+      [[.55,1],[.72,-1]].slice(0,f.t==='rose'?2:1).forEach(([t,side])=>{
+        const p=quad(p0,c,p1,t),q=quad(p0,c,p1,t+.01);
+        const ang=Math.atan2(q.y-p.y,q.x-p.x)*180/Math.PI+side*-50;
+        const lg=el('g',{transform:`translate(${p.x} ${p.y}) rotate(${ang})`},leaves);
+        const lp=el('path',{d:'M0 0 Q 13 -9 28 0 Q 13 9 0 0Z',fill:'url(#leafG)',class:'pop'},lg);
+        el('path',{d:'M1 0 L 25 0',stroke:'#2a5a2a','stroke-width':.6},lg).setAttribute('class','pop');
+        lp.style.setProperty('--d',(sd+t*1.2)+'s');lg.lastChild.style.setProperty('--d',(sd+t*1.2)+'s');
+      });
+    }
+  });
+  // heads: higher first so lower ones sit in front
+  [...FLOWERS].sort((a,b)=>a.y-b.y).forEach(f=>{
+    const outer=el('g',{transform:`translate(${f.x} ${f.y}) scale(${f.s})`,class:'flower'},heads);
+    const head=el('g',{class:'head'},outer);
+    ({rose,daisy,tulip,bud,breath})[f.t](head,f,f.d);
+    outer.dataset.c=f.c||'white';
+    outer.addEventListener('pointerdown',e=>{
+      e.stopPropagation();
+      head.classList.remove('boing');void head.getBoundingClientRect();head.classList.add('boing');
+      const r=outer.getBoundingClientRect();
+      burst(r.left+r.width/2,r.top+r.height/2,PAL[outer.dataset.c],true);
+    });
+  });
+
+  // vellum + front paper + ribbon
+  const v1=el('path',{d:'M76 318 Q 135 352 168 344 L 204 518Z',fill:'#fff','fill-opacity':.22,stroke:'#fff','stroke-opacity':.35,'stroke-width':.6,class:'wrap'},sway);
+  const v2=el('path',{d:'M324 318 Q 265 352 232 344 L 196 518Z',fill:'#fff','fill-opacity':.22,stroke:'#fff','stroke-opacity':.35,'stroke-width':.6,class:'wrap'},sway);
+  const front=el('path',{d:'M108 338 Q 155 368 200 352 Q 245 368 292 338 L 200 516Z',fill:'url(#paperF)',class:'wrap'},sway);
+  const fold=el('path',{d:'M200 352 L 200 516 M150 356 L 196 505 M250 356 L 204 505',stroke:'#c06a8a','stroke-opacity':.35,'stroke-width':1,fill:'none',class:'wrap'},sway);
+  [v1,v2,front,fold].forEach(p=>p.style.setProperty('--d','.15s'));
+
+  const bow=el('g',{class:'wrap'},sway);bow.style.setProperty('--d','.5s');
+  el('path',{d:'M156 424 Q 200 434 244 424 L 241 437 Q 200 446 159 437Z',fill:'url(#ribbon)'},bow);
+  el('path',{d:'M197 432 L 172 488 L 182 483 L 186 494 L 203 436Z',fill:'url(#ribbon)'},bow);
+  el('path',{d:'M203 432 L 226 486 L 216 482 L 213 493 L 197 436Z',fill:'url(#ribbon)'},bow);
+  el('path',{d:'M200 432 C 172 404 146 418 160 438 C 170 450 188 442 200 432Z',fill:'url(#ribbon)',stroke:'#f6b7c9','stroke-width':.7},bow);
+  el('path',{d:'M200 432 C 228 404 254 418 240 438 C 230 450 212 442 200 432Z',fill:'url(#ribbon)',stroke:'#f6b7c9','stroke-width':.7},bow);
+  el('ellipse',{cx:200,cy:432,rx:7,ry:6,fill:'#b81f4f',stroke:'#f6b7c9','stroke-width':.7},bow);
+}
+
+/* ---------- Canvas FX ---------- */
+const bg=$('bg'),bx=bg.getContext('2d'),fx=$('fx'),fxc=fx.getContext('2d');
+let W,H;
+function resize(){const r=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;
+  for(const [c,x] of [[bg,bx],[fx,fxc]]){c.width=W*r;c.height=H*r;x.setTransform(r,0,0,r,0,0);}}
+resize();addEventListener('resize',resize);
+
+const stars=Array.from({length:160},()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.2+.2,p:Math.random()*7}));
+const flies=Array.from({length:28},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:0,vy:0,p:Math.random()*7}));
+const petals=[],parts=[];
+let falling=false,started=false;
+const PET_COLS=['#ff9cc0','#ffc4d8','#ff6f9b','#f7d9ff','#ffffff','#ffb38f'];
+
+function newPetal(x,y,col){
+  return {x:x??Math.random()*W,y:y??-20,vx:(Math.random()-.5)*.6,vy:.5+Math.random()*.9,rot:Math.random()*6,vr:(Math.random()-.5)*.05,
+    s:4+Math.random()*5,ph:Math.random()*7,col:col||PET_COLS[Math.random()*PET_COLS.length|0]};
+}
+function burst(x,y,pal,soft){
+  const cols=pal||PET_COLS;
+  for(let i=0;i<(soft?14:18);i++){const a=Math.random()*Math.PI*2,sp=1.5+Math.random()*3.5;
+    parts.push({k:'petal',x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1.5,rot:Math.random()*6,vr:(Math.random()-.5)*.3,s:3+Math.random()*4,life:1,dec:.008+Math.random()*.008,col:cols[(Math.random()*cols.length)|0]});}
+  for(let i=0;i<(soft?4:8);i++){const a=-Math.PI/2+(Math.random()-.5)*1.6,sp=1+Math.random()*2.5;
+    parts.push({k:'heart',x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,s:7+Math.random()*7,life:1,dec:.01,col:Math.random()<.5?'#ff5c8d':'#ffb3cc',rot:(Math.random()-.5)*.6});}
+  for(let i=0;i<12;i++){const a=Math.random()*Math.PI*2,sp=2+Math.random()*4;
+    parts.push({k:'spark',x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,s:1.5,life:1,dec:.025,col:'#fff4c9'});}
+}
+function heart(c,s){c.beginPath();c.moveTo(0,s*.3);c.bezierCurveTo(0,0,-s*.5,0,-s*.5,s*.3);c.bezierCurveTo(-s*.5,s*.6,0,s*.8,0,s);
+  c.bezierCurveTo(0,s*.8,s*.5,s*.6,s*.5,s*.3);c.bezierCurveTo(s*.5,0,0,0,0,s*.3);c.fill();}
+function petalShape(c,s){c.beginPath();c.moveTo(0,-s);c.bezierCurveTo(s*.9,-s*.6,s*.7,s*.7,0,s);c.bezierCurveTo(-s*.7,s*.7,-s*.9,-s*.6,0,-s);c.fill();}
+
+let trailT=0;
+addEventListener('pointermove',e=>{if(!started)return;const n=performance.now();if(n-trailT<35)return;trailT=n;
+  parts.push({k:'spark',x:e.clientX,y:e.clientY,vx:(Math.random()-.5)*.8,vy:-Math.random()*.8,s:1.6,life:1,dec:.02,col:Math.random()<.5?'#ffd6e7':'#fff4c9'});});
+addEventListener('pointerdown',e=>{if(started&&e.target.id!=='replay')burst(e.clientX,e.clientY);});
+
+function loop(t){
+  bx.clearRect(0,0,W,H);
+  for(const s of stars){bx.globalAlpha=.25+.75*Math.abs(Math.sin(t*.0008+s.p));bx.fillStyle='#fff';bx.beginPath();bx.arc(s.x*W,s.y*H,s.r,0,7);bx.fill();}
+  bx.globalCompositeOperation='lighter';
+  for(const f of flies){
+    f.vx+=(Math.random()-.5)*.06;f.vy+=(Math.random()-.5)*.06;f.vx*=.98;f.vy*=.98;f.x+=f.vx;f.y+=f.vy;
+    if(f.x<-20)f.x=W+20;if(f.x>W+20)f.x=-20;if(f.y<-20)f.y=H+20;if(f.y>H+20)f.y=-20;
+    const a=.35+.65*Math.max(0,Math.sin(t*.0015+f.p));
+    const g=bx.createRadialGradient(f.x,f.y,0,f.x,f.y,12);g.addColorStop(0,`rgba(255,230,160,${a})`);g.addColorStop(.3,`rgba(255,190,120,${a*.35})`);g.addColorStop(1,'rgba(255,160,120,0)');
+    bx.globalAlpha=1;bx.fillStyle=g;bx.beginPath();bx.arc(f.x,f.y,12,0,7);bx.fill();
+  }
+  bx.globalCompositeOperation='source-over';bx.globalAlpha=1;
+
+  fxc.clearRect(0,0,W,H);
+  if(falling&&Math.random()<.09&&petals.length<55)petals.push(newPetal());
+  for(let i=petals.length-1;i>=0;i--){const p=petals[i];
+    p.x+=p.vx+Math.sin(t*.0015+p.ph)*.7;p.y+=p.vy;p.rot+=p.vr;
+    fxc.save();fxc.translate(p.x,p.y);fxc.rotate(p.rot);fxc.scale(Math.cos(t*.003+p.ph),1);fxc.globalAlpha=.85;fxc.fillStyle=p.col;petalShape(fxc,p.s);fxc.restore();
+    if(p.y>H+30)petals.splice(i,1);}
+  for(let i=parts.length-1;i>=0;i--){const p=parts[i];
+    p.life-=p.dec;if(p.life<=0){parts.splice(i,1);continue;}
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.k==='petal'){p.vy+=.06;p.vx*=.98;p.rot+=p.vr;}else if(p.k==='heart'){p.vy-=.02;p.vx*=.97;p.vy*=.98;}else{p.vx*=.93;p.vy*=.93;}
+    fxc.save();fxc.translate(p.x,p.y);fxc.globalAlpha=Math.min(1,p.life*1.4);fxc.fillStyle=p.col;
+    if(p.k==='petal'){fxc.rotate(p.rot);fxc.scale(Math.cos(p.rot*2),1);petalShape(fxc,p.s);}
+    else if(p.k==='heart'){fxc.rotate(p.rot);fxc.translate(0,-p.s/2);heart(fxc,p.s);}
+    else{fxc.shadowColor=p.col;fxc.shadowBlur=8;fxc.beginPath();fxc.arc(0,0,p.s,0,7);fxc.fill();}
+    fxc.restore();}
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* ---------- Flow ---------- */
+let timers=[];
+function start(){
+  timers.forEach(clearTimeout);timers=[];
+  falling=false;started=true;
+  $('scene').style.visibility='visible';
+  buildName();buildBouquet();
+  const sub=$('sub');sub.style.animation='none';void sub.offsetWidth;sub.style.animation='';
+  $('hint').classList.remove('show');
+  timers.push(setTimeout(()=>{falling=true;const r=$('bouquet').getBoundingClientRect();
+    for(let i=0;i<5;i++)timers.push(setTimeout(()=>burst(r.left+r.width*(.2+Math.random()*.6),r.top+r.height*(.15+Math.random()*.3)),i*220));},4200));
+  timers.push(setTimeout(()=>{$('hint').classList.add('show');$('replay').classList.add('show');},6500));
+  timers.push(setTimeout(()=>$('hint').classList.remove('show'),14000));
+}
+$('scene').style.visibility='hidden';
+$('intro').addEventListener('click',e=>{
+  const intro=$('intro');if(intro.classList.contains('gone'))return;
+  intro.classList.add('gone');
+  const r=$('seed').getBoundingClientRect();
+  started=true;burst(r.left+r.width/2,r.top+r.height/2);
+  (document.fonts?document.fonts.ready:Promise.resolve()).then(()=>setTimeout(start,500));
+});
+$('replay').addEventListener('click',e=>{e.stopPropagation();start();});
+</script>
+</body>
+</html>
