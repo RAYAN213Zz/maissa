@@ -71,6 +71,58 @@
     width:42px;height:42px;border-radius:50%;font-size:20px;cursor:pointer;opacity:0;transition:opacity 1s,transform .4s;backdrop-filter:blur(6px)}
   #replay:hover{transform:rotate(-180deg)}
   #replay.show,#hint.show{opacity:1}
+
+  /* ring box trigger */
+  #ringBtn{position:fixed;left:50%;bottom:54px;z-index:6;width:64px;height:56px;padding:0;border:0;background:none;cursor:pointer;
+    transform:translateX(-50%) scale(0);transition:transform .9s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 0 14px rgba(255,120,170,.7))}
+  #ringBtn.show{transform:translateX(-50%) scale(1)}
+  #ringBtn.show svg{animation:wiggle 2.6s ease-in-out 1s infinite;transform-origin:50% 100%}
+  @keyframes wiggle{0%,78%,100%{transform:rotate(0)}83%{transform:rotate(-12deg) translateY(-4px)}88%{transform:rotate(10deg) translateY(-6px)}93%{transform:rotate(-5deg)}}
+
+  /* proposal */
+  #prop{position:fixed;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+    background:radial-gradient(ellipse at 50% 45%,rgba(60,10,45,.75),rgba(6,2,12,.92));backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+    opacity:0;pointer-events:none;transition:opacity 1s ease;text-align:center;padding:20px}
+  #prop.on{opacity:1;pointer-events:auto}
+  .box{position:relative;width:190px;height:230px;transform:scale(.6);opacity:0;transition:transform 1s cubic-bezier(.34,1.56,.64,1),opacity .8s}
+  #prop.on .box{transform:scale(1);opacity:1}
+  .base{position:absolute;left:0;bottom:0;width:190px;height:96px;z-index:2;border-radius:14px 14px 22px 22px;
+    background:linear-gradient(180deg,#a3194a 0%,#6e0d2f 55%,#3d0518 100%);
+    box-shadow:inset 0 -10px 18px rgba(0,0,0,.45),inset 0 2px 0 rgba(255,180,210,.35),0 24px 50px rgba(0,0,0,.6)}
+  .base::before{content:"";position:absolute;left:12px;right:12px;top:8px;height:40px;border-radius:12px;
+    background:radial-gradient(ellipse at 50% 25%,#fff0f5 0%,#eab3c7 55%,#b26583 100%);box-shadow:inset 0 5px 10px rgba(0,0,0,.35)}
+  .base::after{content:"";position:absolute;left:50%;top:14px;width:7px;height:26px;transform:translateX(-50%);background:#6b2445;border-radius:4px;box-shadow:inset 0 2px 3px rgba(0,0,0,.5)}
+  .gold{position:absolute;left:0;right:0;bottom:30px;height:3px;background:linear-gradient(90deg,transparent,#f7d58a,#fff3c4,#f7d58a,transparent);opacity:.8}
+  .lid,.lidIn{position:absolute;left:0;bottom:90px;width:190px;height:72px;transform-origin:50% 100%;z-index:3}
+  .lid{border-radius:24px 24px 8px 8px;background:linear-gradient(180deg,#c42a5c 0%,#8a1239 60%,#5c0a26 100%);
+    box-shadow:inset 0 3px 0 rgba(255,190,215,.4),inset 0 -6px 12px rgba(0,0,0,.35);transition:transform .45s cubic-bezier(.6,0,.9,.5)}
+  .lid::after{content:"";position:absolute;left:0;right:0;bottom:8px;height:3px;background:linear-gradient(90deg,transparent,#f7d58a,#fff3c4,#f7d58a,transparent);opacity:.8}
+  .lidIn{z-index:1;border-radius:24px 24px 6px 6px;transform:scaleY(0);transition:transform .7s cubic-bezier(.2,1.5,.4,1) .42s;
+    background:radial-gradient(ellipse at 50% 70%,#fff7fa 0%,#f3c9d8 55%,#9a2a52 100%);box-shadow:inset 0 0 0 7px #8a1239,inset 0 0 22px rgba(120,20,60,.5)}
+  .box.open .lid{transform:scaleY(0)}
+  .box.open .lidIn{transform:scaleY(1)}
+  .ring{position:absolute;left:50%;bottom:52px;width:120px;margin-left:-60px;z-index:1;opacity:0;transform:translateY(60px) scale(.8);
+    transition:transform 1.4s cubic-bezier(.2,1.3,.4,1) 1s,opacity .6s 1s}
+  .box.open .ring{z-index:4;opacity:1;transform:none}
+  .ring .spark{transform-box:fill-box;transform-origin:center;animation:twinkle 1.6s ease-in-out infinite}
+  @keyframes twinkle{0%,100%{transform:scale(0) rotate(0);opacity:0}50%{transform:scale(1) rotate(90deg);opacity:1}}
+  .ring .shine{animation:shine 2.4s ease-in-out infinite}
+  @keyframes shine{0%,100%{opacity:.15}50%{opacity:.9}}
+  .q1{font-family:'Great Vibes',cursive;font-size:clamp(46px,11vw,78px);line-height:1;margin:6px 0 0;color:#ffd6e7;opacity:0;
+    text-shadow:0 0 22px rgba(255,130,180,.8);transition:opacity 1.2s ease 2.3s,transform 1.2s ease 2.3s;transform:translateY(12px)}
+  .q2{font-style:italic;font-size:clamp(24px,5.2vw,34px);margin:0;color:#fff2f7;opacity:0;letter-spacing:.03em;
+    transition:opacity 1.2s ease 3.1s,transform 1.2s ease 3.1s;transform:translateY(12px)}
+  .btns{display:flex;gap:18px;align-items:center;justify-content:center;margin-top:10px;opacity:0;transition:opacity 1s ease 4s;min-height:60px}
+  .box.open~.q1,.box.open~.q2{opacity:1;transform:none}
+  .box.open~.btns{opacity:1}
+  #yes,#no{font-family:'Cormorant Garamond',serif;font-size:21px;font-style:italic;border-radius:40px;cursor:pointer;padding:10px 28px;
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1),left .35s ease,top .35s ease}
+  #yes{background:linear-gradient(135deg,#ff5c8d,#c2185b);color:#fff;border:0;box-shadow:0 0 26px rgba(255,92,141,.65);animation:yesPulse 1.4s ease-in-out infinite}
+  @keyframes yesPulse{50%{box-shadow:0 0 44px rgba(255,92,141,.95)}}
+  #no{background:rgba(255,255,255,.06);color:#ffd6e7;border:1px solid rgba(255,214,231,.35);white-space:nowrap}
+  .yay{font-family:'Great Vibes',cursive;font-size:clamp(40px,9vw,64px);color:#ffd6e7;text-shadow:0 0 26px rgba(255,120,170,.9);margin:0;animation:fadeUp 1.2s ease forwards}
+  .yay2{font-style:italic;font-size:clamp(19px,4vw,25px);color:#fff2f7;margin:0;opacity:0;animation:fadeUp 1.2s ease .8s forwards}
+  .bigHeart{font-size:64px;line-height:1;color:#ff4f86;filter:drop-shadow(0 0 20px #ff4f86);animation:beat 1.2s ease-in-out infinite}
 </style>
 </head>
 <body>
@@ -93,6 +145,16 @@
 </div>
 <div id="hint">✿ touche les fleurs ✿</div>
 <button id="replay" aria-label="Rejouer">↻</button>
+<button id="ringBtn" aria-label="Ouvrir la boîte">
+  <svg viewBox="0 0 64 56" width="64" height="56">
+    <defs><linearGradient id="mb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c42a5c"/><stop offset="1" stop-color="#5c0a26"/></linearGradient></defs>
+    <rect x="8" y="30" width="48" height="24" rx="6" fill="url(#mb)"/>
+    <rect x="6" y="14" width="52" height="19" rx="8" fill="url(#mb)"/>
+    <rect x="6" y="28" width="52" height="2" fill="#f7d58a" opacity=".85"/>
+    <path d="M32 4 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill="#fff4c9"/>
+  </svg>
+</button>
+<div id="prop"></div>
 
 <script>
 const NS='http://www.w3.org/2000/svg';
@@ -322,10 +384,10 @@ function loop(t){
   bx.globalCompositeOperation='source-over';bx.globalAlpha=1;
 
   fxc.clearRect(0,0,W,H);
-  if(falling&&Math.random()<.09&&petals.length<55)petals.push(newPetal());
+  if(falling&&Math.random()<(hearts?.3:.09)&&petals.length<(hearts?120:55)){const np=newPetal();if(hearts&&Math.random()<.6){np.h=1;np.col=Math.random()<.5?'#ff4f86':'#ffb3cc';np.s+=3;}petals.push(np);}
   for(let i=petals.length-1;i>=0;i--){const p=petals[i];
     p.x+=p.vx+Math.sin(t*.0015+p.ph)*.7;p.y+=p.vy;p.rot+=p.vr;
-    fxc.save();fxc.translate(p.x,p.y);fxc.rotate(p.rot);fxc.scale(Math.cos(t*.003+p.ph),1);fxc.globalAlpha=.85;fxc.fillStyle=p.col;petalShape(fxc,p.s);fxc.restore();
+    fxc.save();fxc.translate(p.x,p.y);fxc.rotate(p.rot);fxc.globalAlpha=.85;fxc.fillStyle=p.col;if(p.h){fxc.rotate(-p.rot+Math.sin(t*.002+p.ph)*.4);heart(fxc,p.s*2);}else{fxc.scale(Math.cos(t*.003+p.ph),1);petalShape(fxc,p.s);}fxc.restore();
     if(p.y>H+30)petals.splice(i,1);}
   for(let i=parts.length-1;i>=0;i--){const p=parts[i];
     p.life-=p.dec;if(p.life<=0){parts.splice(i,1);continue;}
@@ -344,7 +406,8 @@ requestAnimationFrame(loop);
 let timers=[];
 function start(){
   timers.forEach(clearTimeout);timers=[];
-  falling=false;started=true;
+  falling=false;started=true;hearts=false;
+  $('prop').classList.remove('on');$('prop').innerHTML='';$('ringBtn').classList.remove('show');$('hint').textContent='✿ touche les fleurs ✿';
   $('scene').style.visibility='visible';
   buildName();buildBouquet();
   const sub=$('sub');sub.style.animation='none';void sub.offsetWidth;sub.style.animation='';
@@ -352,8 +415,65 @@ function start(){
   timers.push(setTimeout(()=>{falling=true;const r=$('bouquet').getBoundingClientRect();
     for(let i=0;i<5;i++)timers.push(setTimeout(()=>burst(r.left+r.width*(.2+Math.random()*.6),r.top+r.height*(.15+Math.random()*.3)),i*220));},4200));
   timers.push(setTimeout(()=>{$('hint').classList.add('show');$('replay').classList.add('show');},6500));
-  timers.push(setTimeout(()=>$('hint').classList.remove('show'),14000));
+  timers.push(setTimeout(()=>{$('hint').textContent='✿ ouvre la petite boîte ✿';$('ringBtn').classList.add('show');},11000));
 }
+
+/* ---------- Proposal ---------- */
+const RING=`<svg class="ring" viewBox="0 0 120 130">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3c4"/><stop offset=".35" stop-color="#f2c14e"/><stop offset=".7" stop-color="#b8862b"/><stop offset="1" stop-color="#ffe9a8"/></linearGradient>
+    <linearGradient id="dia" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#d9f3ff"/><stop offset="1" stop-color="#9fd4f2"/></linearGradient>
+    <filter id="dglow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <ellipse cx="60" cy="88" rx="33" ry="35" fill="none" stroke="url(#gold)" stroke-width="8"/>
+  <ellipse cx="60" cy="88" rx="33" ry="35" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.5" stroke-dasharray="30 200" class="shine"/>
+  <path d="M50 56 L70 56 L66 48 L54 48Z" fill="url(#gold)"/>
+  <g filter="url(#dglow)">
+    <path d="M40 30 L50 18 L70 18 L80 30 L60 52Z" fill="url(#dia)" stroke="#bfe6ff" stroke-width=".8"/>
+    <path d="M40 30 L80 30 M50 18 L56 30 L60 52 L64 30 L70 18 M56 30 L60 18 L64 30" fill="none" stroke="#8cc8ea" stroke-width=".7" opacity=".8"/>
+    <path d="M52 21 L58 21 L55 28Z" fill="#fff" class="shine"/>
+  </g>
+  <path class="spark" d="M88 14 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z" fill="#fff"/>
+  <path class="spark" style="animation-delay:.5s" d="M28 22 l1.5 4.5 4.5 1.5 -4.5 1.5 -1.5 4.5 -1.5 -4.5 -4.5 -1.5 4.5 -1.5z" fill="#fff4c9"/>
+  <path class="spark" style="animation-delay:1s" d="M64 2 l1.2 3.6 3.6 1.2 -3.6 1.2 -1.2 3.6 -1.2 -3.6 -3.6 -1.2 3.6 -1.2z" fill="#fff"/>
+</svg>`;
+
+let hearts=false,noCount=0;
+const NO_TXT=['Non','t\'es sûre ?','vraiment ?','réfléchis bien…','allez 🥺','impossible 😌'];
+function openProposal(){
+  const p=$('prop');
+  p.innerHTML=`<div class="box" id="box"><div class="lidIn"></div>${RING}<div class="lid"></div><div class="base"><div class="gold"></div></div></div>
+    <p class="q1">Maissa,</p><p class="q2">veux-tu m'épouser ?</p>
+    <div class="btns"><button id="yes">Oui ♥</button><button id="no">Non</button></div>`;
+  noCount=0;
+  requestAnimationFrame(()=>p.classList.add('on'));
+  $('ringBtn').classList.remove('show');$('hint').classList.remove('show');
+  setTimeout(()=>{$('box').classList.add('open');
+    setTimeout(()=>{const r=$('box').getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height*.35,['#fff4c9','#ffffff','#d9f3ff','#ffd6e7']);},1500);
+  },900);
+  const no=$('no'),yes=$('yes');
+  const dodge=e=>{e.preventDefault();e.stopPropagation();
+    noCount++;
+    if(no.parentElement!==p){p.appendChild(no);}
+    no.style.position='fixed';
+    const w=no.offsetWidth||110,h=no.offsetHeight||46;
+    no.style.left=(12+Math.random()*(innerWidth-w-24))+'px';
+    no.style.top=(12+Math.random()*(innerHeight-h-24))+'px';
+    no.textContent=NO_TXT[Math.min(noCount,NO_TXT.length-1)];
+    no.style.transform=`scale(${Math.max(.45,1-noCount*.1)})`;
+    yes.style.transform=`scale(${Math.min(1.9,1+noCount*.15)})`;
+  };
+  no.addEventListener('pointerenter',dodge);no.addEventListener('pointerdown',dodge);no.addEventListener('click',dodge);
+  yes.addEventListener('click',e=>{e.stopPropagation();sayYes();});
+}
+function sayYes(){
+  const p=$('prop');
+  p.innerHTML=`<div class="box open" id="box" style="transform:scale(.8);opacity:1"><div class="lidIn" style="transition:none"></div>${RING}<div class="lid" style="transition:none"></div><div class="base"><div class="gold"></div></div></div>
+    <div class="bigHeart">♥</div><p class="yay">Elle a dit oui !</p><p class="yay2">tu viens de faire de moi l'homme le plus heureux du monde</p>`;
+  hearts=true;
+  for(let i=0;i<14;i++)setTimeout(()=>burst(innerWidth*(.1+Math.random()*.8),innerHeight*(.1+Math.random()*.7)),i*260);
+}
+$('ringBtn').addEventListener('click',e=>{e.stopPropagation();openProposal();});
 $('scene').style.visibility='hidden';
 $('intro').addEventListener('click',e=>{
   const intro=$('intro');if(intro.classList.contains('gone'))return;
